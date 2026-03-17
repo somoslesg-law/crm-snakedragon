@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+crm/node_modules/
+
+# Build outputs
+dist/
+crm/dist/
+build/
+crm/build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+crm/.env
+crm/.env.*
+!crm/.env.example
+
+# Logs
+*.log
+crm/*.log
+
+# OS files
+.DS_Store
+Thumbs.db

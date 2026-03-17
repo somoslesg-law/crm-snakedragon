@@ -262,7 +262,7 @@ CREATE TABLE sd_core.usuarios (
     password_hash           VARCHAR(255),                -- bcrypt
     nombre                  VARCHAR(100) NOT NULL,
     apellido                VARCHAR(100) NOT NULL,
-    nombre_display          VARCHAR(255) GENERATED ALWAYS AS (nombre || ' ' || apellido) STORED,
+    nombre_display          VARCHAR(255),
     rol                     sd_core.rol_usuario NOT NULL DEFAULT 'solo_lectura',
     telefono                VARCHAR(30),
     avatar_url              VARCHAR(500),
@@ -402,7 +402,7 @@ CREATE TABLE sd_clientes.contactos (
     -- Identidad
     nombre                      VARCHAR(100) NOT NULL,
     apellido                    VARCHAR(100),
-    nombre_completo             VARCHAR(255) GENERATED ALWAYS AS (nombre || ' ' || COALESCE(apellido, '')) STORED,
+    nombre_completo             VARCHAR(255),
     documento_tipo              VARCHAR(20), -- cc, ce, pasaporte, nit
     documento_numero            VARCHAR(30),
     -- Cargo y rol
@@ -649,9 +649,9 @@ CREATE TABLE sd_servicios.combos (
     costo_total_cop             DECIMAL(12,2),          -- suma de costos internos
     -- Comisión del combo
     tasa_comision               DECIMAL(5,2) NOT NULL,  -- 10, 12 o 15
-    monto_comision_cop          DECIMAL(12,2) GENERATED ALWAYS AS (precio_combo_cop * tasa_comision / 100) STORED,
+    monto_comision_cop          DECIMAL(12,2),
     -- Margen calculado
-    margen_bruto_cop            DECIMAL(12,2) GENERATED ALWAYS AS (precio_combo_cop - costo_total_cop - (precio_combo_cop * tasa_comision / 100)) STORED,
+    margen_bruto_cop            DECIMAL(12,2),
     -- Soporte recurrente incluido
     incluye_soporte_mensual     BOOLEAN DEFAULT TRUE,
     precio_soporte_mensual_cop  DECIMAL(12,2),

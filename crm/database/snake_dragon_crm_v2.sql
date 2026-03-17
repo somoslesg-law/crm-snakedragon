@@ -1225,9 +1225,7 @@ CREATE TABLE sd_financiero.cash_flow_forecast (
     comisiones_a_pagar  DECIMAL(12,2) DEFAULT 0,
     gastos_fijos        DECIMAL(12,2) DEFAULT 0,
     otros_gastos        DECIMAL(12,2) DEFAULT 0,
-    flujo_neto          DECIMAL(15,2) GENERATED ALWAYS AS (
-        cobros_confirmados + cobros_proyectados - comisiones_a_pagar - gastos_fijos - otros_gastos
-    ) STORED,
+    flujo_neto          DECIMAL(15,2),
     cobros_reales       DECIMAL(15,2),
     gastos_reales       DECIMAL(12,2),
     notas               TEXT,

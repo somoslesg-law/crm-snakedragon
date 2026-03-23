@@ -30,10 +30,10 @@ COPY --from=builder /app/database ./database
 
 # Variables de entorno por defecto
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3000
 
 # Exponer el puerto
-EXPOSE 8080
+EXPOSE 3000
 
 # Comando de producción: tsx para correr TypeScript directamente
 # tsx ya está en devDependencies pero se instala con npx para mantener imagen limpia

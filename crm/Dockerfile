@@ -30,7 +30,7 @@ COPY --from=builder /app/database ./database
 
 # Variables de entorno por defecto
 ENV NODE_ENV=production
-ENV API_PORT=8080
+ENV PORT=8080
 
 # Exponer el puerto
 EXPOSE 8080

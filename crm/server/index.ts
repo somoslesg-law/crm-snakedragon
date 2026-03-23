@@ -12,7 +12,7 @@ import { GoogleGenAI } from '@google/genai';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
-const PORT = parseInt(process.env.API_PORT || '8080', 10);
+const PORT = parseInt(process.env.PORT || process.env.API_PORT || '8080', 10);
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────
@@ -423,7 +423,12 @@ if (process.env.NODE_ENV === 'production') {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
-    console.log(`🚀 Snake Dragon CRM API running on port ${PORT} [${process.env.NODE_ENV || 'production'}]`);
-    console.log(`📡 Listening on all available interfaces (IPv4/IPv6)`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`🚀 Snake Dragon CRM Backend ready`);
+    console.log(`📡 Serving at 0.0.0.0:${PORT} [ENV: ${process.env.NODE_ENV || 'development'}]`);
+    if (process.env.NODE_ENV === 'production') {
+        console.log(`🌐 Frontend delivery active from /dist folder`);
+    } else {
+        console.log(`⚠️  Running in DEV MODE: Backend only, frontend not served via static`);
+    }
 });

@@ -15,14 +15,16 @@ const __dirname = path.dirname(__filename);
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.error('❌ Error: DATABASE_URL no está definida en el entorno.');
+  console.error('❌ Error: DATABASE_URL no está definida.');
   process.exit(1);
 }
 
 async function runMigration() {
+  const isSslRequired = process.env.DB_REQUIRE_SSL === 'true' || connectionString.includes('sslmode=require');
+  
   const client = new Client({
     connectionString,
-    ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
+    ssl: isSslRequired ? { rejectUnauthorized: false } : false
   });
 
   try {

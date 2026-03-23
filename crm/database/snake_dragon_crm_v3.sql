@@ -858,11 +858,11 @@ BEGIN
         v_mes_fin := v_mes + INTERVAL '1 month';
 
         -- event_stream
-        v_nombre := format('sd_events.event_stream_%s_%02s', EXTRACT(YEAR FROM v_mes)::INT, EXTRACT(MONTH FROM v_mes)::INT);
+        v_nombre := format('sd_events.event_stream_%s_%s', EXTRACT(YEAR FROM v_mes)::INT, LPAD(EXTRACT(MONTH FROM v_mes)::INT::text, 2, '0'));
         EXECUTE format('CREATE TABLE IF NOT EXISTS %s PARTITION OF sd_events.event_stream FOR VALUES FROM (%L) TO (%L)', v_nombre, v_mes, v_mes_fin);
 
         -- audit_log
-        v_nombre := format('sd_audit.audit_log_%s_%02s', EXTRACT(YEAR FROM v_mes)::INT, EXTRACT(MONTH FROM v_mes)::INT);
+        v_nombre := format('sd_audit.audit_log_%s_%s', EXTRACT(YEAR FROM v_mes)::INT, LPAD(EXTRACT(MONTH FROM v_mes)::INT::text, 2, '0'));
         EXECUTE format('CREATE TABLE IF NOT EXISTS %s PARTITION OF sd_audit.audit_log FOR VALUES FROM (%L) TO (%L)', v_nombre, v_mes, v_mes_fin);
     END LOOP;
 END;

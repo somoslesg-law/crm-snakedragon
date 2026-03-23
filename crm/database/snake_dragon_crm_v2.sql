@@ -180,12 +180,12 @@ DECLARE
 BEGIN
     FOR y IN 2025..2026 LOOP
         FOR m IN 1..12 LOOP
-            tname := format('sd_events.event_stream_%s_%02s', y, m);
-            d1 := format('%s-%02s-01', y, m);
+            tname := format('sd_events.event_stream_%s_%s', y, LPAD(m::text, 2, '0'));
+            d1 := format('%s-%s-01', y, LPAD(m::text, 2, '0'));
             d2 := CASE WHEN m = 12 THEN format('%s-01-01', y+1)
-                        ELSE format('%s-%02s-01', y, m+1) END;
+                        ELSE format('%s-%s-01', y, LPAD((m+1)::text, 2, '0')) END;
             EXECUTE format(
-                'CREATE TABLE %s PARTITION OF sd_events.event_stream FOR VALUES FROM (%L) TO (%L)',
+                'CREATE TABLE IF NOT EXISTS %s PARTITION OF sd_events.event_stream FOR VALUES FROM (%L) TO (%L)',
                 tname, d1, d2
             );
         END LOOP;

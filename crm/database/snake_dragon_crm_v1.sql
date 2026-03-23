@@ -1230,13 +1230,7 @@ CREATE TABLE sd_contratos.contrato_servicios (
     fecha_entrega       DATE
 );
 
--- FK diferidas para liquidaciones
-ALTER TABLE sd_comisiones.liquidaciones
-    ADD CONSTRAINT fk_liq_pago       FOREIGN KEY (pago_id)    REFERENCES sd_financiero.pagos(id)        DEFERRABLE INITIALLY DEFERRED;
-ALTER TABLE sd_comisiones.liquidaciones
-    ADD CONSTRAINT fk_liq_factura    FOREIGN KEY (factura_id) REFERENCES sd_financiero.facturas(id)     DEFERRABLE INITIALLY DEFERRED;
-ALTER TABLE sd_comisiones.liquidaciones
-    ADD CONSTRAINT fk_liq_contrato   FOREIGN KEY (contrato_id) REFERENCES sd_contratos.contratos(id)   DEFERRABLE INITIALLY DEFERRED;
+-- (Bloque de FK diferidas movido más abajo para evitar error de dependencia)
 
 -- ============================================================
 -- 9. SCHEMA: sd_financiero — FACTURAS, PAGOS, CxC
@@ -1351,6 +1345,15 @@ CREATE TABLE sd_financiero.pagos (
     updated_at                  TIMESTAMPTZ DEFAULT NOW(),
     created_by                  UUID REFERENCES sd_core.usuarios(id)
 );
+
+-- FK diferidas para liquidaciones (Movido aquí para asegurar que 'pagos' y 'facturas' existan)
+ALTER TABLE sd_comisiones.liquidaciones
+    ADD CONSTRAINT fk_liq_pago       FOREIGN KEY (pago_id)    REFERENCES sd_financiero.pagos(id)        DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE sd_comisiones.liquidaciones
+    ADD CONSTRAINT fk_liq_factura    FOREIGN KEY (factura_id) REFERENCES sd_financiero.facturas(id)     DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE sd_comisiones.liquidaciones
+    ADD CONSTRAINT fk_liq_contrato   FOREIGN KEY (contrato_id) REFERENCES sd_contratos.contratos(id)   DEFERRABLE INITIALLY DEFERRED;
+
 
 -- Cuentas por cobrar (vista resumida para gestión de cartera)
 CREATE TABLE sd_financiero.cuentas_por_cobrar (

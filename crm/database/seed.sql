@@ -1,100 +1,66 @@
 -- ═══════════════════════════════════════════════════════════════
--- SNAKE DRAGON CRM V3 — SEED DATA
--- Initial data: admin user, catalog tables, pipeline stages
+-- SNAKE DRAGON CRM V3 — SEED DATA (Revenue Intelligence System)
+-- Initial data: superadmin, system config, category lookups
 -- ═══════════════════════════════════════════════════════════════
 
--- Disable triggers temporarily for seeding
+-- Deshabilitar triggers temporalmente para carga masiva
 SET session_replication_role = 'replica';
 
--- ─── Empresa Inicial ─────────────────────────────────────────────────────────
-INSERT INTO sd_core.configuracion_empresa (
-    nombre_empresa, nit, moneda, zona_horaria, logo_url
-) VALUES (
-    'Snake Dragon Corp', '900.123.456-7', 'COP', 'America/Bogota', NULL
-) ON CONFLICT DO NOTHING;
+-- ─── Configuración Inicial del Sistema ──────────────────────────────────────────
+INSERT INTO sd_core.configuracion (clave, valor, descripcion, categoria) VALUES
+('empresa_nombre', '"Snake Dragon Corp"', 'Nombre legal de la entidad', 'sistema'),
+('moneda_principal', '"COP"', 'Moneda base del sistema', 'financiero'),
+('n8n_webhook_url', '"https://n8n.tu-dominio.com/webhook/crm"', 'URL base para automatizaciones', 'sistema'),
+('pipeline_default_id', '"general"', 'Pipeline por defecto para nuevos leads', 'comercial')
+ON CONFLICT (clave) DO UPDATE SET valor = EXCLUDED.valor;
 
--- ─── Usuario Administrador ────────────────────────────────────────────────────
+-- ─── Usuario Superadministrador ────────────────────────────────────────────────
 -- Contraseña por defecto: Admin2024!
--- IMPORTANTE: Cambiar la contraseña en el primer inicio de sesión
--- Hash generado con bcrypt, salt rounds 12
 INSERT INTO sd_core.usuarios (
-    id,
-    email,
-    password_hash,
-    nombre,
-    apellido,
-    rol,
-    activo
+    id, codigo_usuario, email, password_hash, nombre, apellido, nombre_display, rol, activo
 ) VALUES (
-    gen_random_uuid(),
-    'admin@snakedragon.com',
-    '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TZFSTk5.3K7Y7hM2F6q.mE2mHRXu',
-    'Comandante',
-    'Admin',
-    'admin',
-    true
+    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'SD-USR-001', 'admin@snakedragon.com', 
+    '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TZFSTk5.3K7Y7hM2F6q.mE2mHRXu', 
+    'Andrés', 'Valencia', 'Andrés (SuperAdmin)', 'superadmin', true
 ) ON CONFLICT (email) DO NOTHING;
 
--- ─── Etapas del Pipeline ─────────────────────────────────────────────────────
-INSERT INTO sd_comercial.etapas_pipeline (nombre, orden, color, probabilidad_cierre) VALUES
-('Prospecto',       1, '#6B7280', 10),
-('Contactado',      2, '#3B82F6', 20),
-('Calificado',      3, '#8B5CF6', 35),
-('Propuesta',       4, '#F59E0B', 55),
-('Negociación',     5, '#EF4444', 70),
-('Ganado',          6, '#10B981', 100),
-('Perdido',         7, '#1F2937', 0)
-ON CONFLICT DO NOTHING;
+-- ─── Catálogo de Industrias (sd_core.cat_industrias) ───────────────────────────
+INSERT INTO sd_core.cat_industrias (codigo, nombre, sector_padre, score_icp) VALUES
+('IND-TECH',    'Tecnología y Software', 'Servicios', 10),
+('IND-FIN',     'Finanzas y Seguros',    'Servicios', 9),
+('IND-CONS',    'Consultoría Prof.',     'Servicios', 8),
+('IND-RETAIL',  'Retail y Comercio',     'Consumo',   6),
+('IND-MANU',    'Manufactura',           'Industrial', 7)
+ON CONFLICT (codigo) DO NOTHING;
 
--- ─── Fuentes de Leads ─────────────────────────────────────────────────────────
-INSERT INTO sd_comercial.fuentes_lead (nombre, descripcion) VALUES
-('Web Orgánica',        'Visitas directas al sitio web'),
-('Referido',            'Recomendación de cliente existente'),
-('LinkedIn',            'Campaña o prospección en LinkedIn'),
-('Llamada en Frío',     'Outbound telefónico'),
-('Evento/Feria',        'Captación en evento presencial o virtual'),
-('Google Ads',          'Campaña pagada en Google'),
-('Instagram/Facebook',  'Campaña pagada en redes sociales')
-ON CONFLICT DO NOTHING;
+-- ─── Catálogo de Orígenes de Lead (sd_core.cat_origenes_lead) ──────────────────
+INSERT INTO sd_core.cat_origenes_lead (codigo, nombre, categoria, es_digital) VALUES
+('SRC-WEB',     'Sitio Web (Orgánico)',  'organico', true),
+('SRC-LNK',     'LinkedIn Ads',          'pagado',   true),
+('SRC-REF',     'Referido de Cliente',   'referido', false),
+('SRC-EVENT',   'Evento Presencial',      'evento',   false),
+('SRC-COLD',    'Outbound / Prospección','outbound', false)
+ON CONFLICT (codigo) DO NOTHING;
 
--- ─── Categorías de Producto ───────────────────────────────────────────────────
-INSERT INTO sd_comercial.categorias_producto (nombre, descripcion) VALUES
-('Consultoría',     'Servicios de consultoría estratégica'),
-('SaaS',            'Software como servicio'),
-('Implementación',  'Proyectos de implementación'),
-('Soporte',         'Contratos de soporte y mantenimiento'),
-('Capacitación',    'Programas de formación y entrenamiento')
-ON CONFLICT DO NOTHING;
+-- ─── Tipos de Actividad (sd_core.cat_tipos_actividad) ─────────────────────────
+INSERT INTO sd_core.cat_tipos_actividad (codigo, nombre, puntos_score) VALUES
+('ACT-CALL',    'Llamada de Venta',      5),
+('ACT-MEET',    'Reunión / Discovery',   10),
+('ACT-PROP',    'Presentación Propuesta',15),
+('ACT-WAPP',    'WhatsApp Seguimiento',  2),
+('ACT-DEMO',    'Demo de Producto',      20)
+ON CONFLICT (codigo) DO NOTHING;
 
--- ─── Estado de sesiones ──────────────────────────────────────────────────────
--- Ensure sesiones table exists for auth logging
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT FROM information_schema.tables
-        WHERE table_schema = 'sd_core' AND table_name = 'sesiones'
-    ) THEN
-        CREATE TABLE sd_core.sesiones (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            usuario_id UUID NOT NULL,
-            ip INET,
-            user_agent TEXT,
-            created_at TIMESTAMPTZ DEFAULT NOW()
-        );
-    END IF;
-END$$;
-
--- Re-enable triggers
+-- ─── Re-habilitar triggers ───
 SET session_replication_role = 'origin';
 
--- Verification
+-- Verificación final
 DO $$
 DECLARE
-    user_count INT;
+    u_count INT;
 BEGIN
-    SELECT COUNT(*) INTO user_count FROM sd_core.usuarios;
-    RAISE NOTICE '✅ Seed completado. Usuarios creados: %', user_count;
-    RAISE NOTICE '📧 Login: admin@snakedragon.com';
-    RAISE NOTICE '🔑 Password: Admin2024!';
-    RAISE NOTICE '⚠️  IMPORTANTE: Cambiar contraseña en el primer login';
+    SELECT COUNT(*) INTO u_count FROM sd_core.usuarios;
+    RAISE NOTICE '✅ Seed completado.';
+    RAISE NOTICE '👤 Usuarios: %', u_count;
+    RAISE NOTICE '🚀 CRM Listo para operar.';
 END$$;

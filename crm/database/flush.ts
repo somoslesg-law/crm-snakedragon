@@ -19,7 +19,7 @@ async function flushDB() {
         await client.connect();
         
         const sql = `
-            DROP SCHEMA IF EXISTS sd_core, sd_clientes, sd_comercial, sd_financiero, sd_servicios, sd_contratos, sd_comisiones, sd_operaciones, sd_marketing, sd_portal, sd_audit, sd_seguridad, sd_analytics, sd_ai, sd_automation, sd_producto, sd_inteligencia, sd_events, sd_soporte CASCADE;
+            DROP SCHEMA IF EXISTS sd_core, sd_clientes, sd_comercial, sd_financiero, sd_servicios, sd_contratos, sd_comisiones, sd_operaciones, sd_marketing, sd_portal, sd_audit, sd_seguridad, sd_analytics, sd_ai, sd_automation, sd_producto, sd_inteligencia, sd_events, sd_soporte, sd_copilot CASCADE;
             
             -- Limpiar tipos (Enums) que puedan haber quedado en el esquema public o residuales
             DO $$ 

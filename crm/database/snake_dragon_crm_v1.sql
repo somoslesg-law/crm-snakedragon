@@ -1768,11 +1768,11 @@ CREATE INDEX idx_audit_usuario ON sd_audit.audit_log(usuario_id);
 CREATE INDEX idx_audit_registro ON sd_audit.audit_log(registro_id);
 CREATE INDEX idx_audit_created ON sd_audit.audit_log(created_at DESC);
 
--- Full text search
-CREATE INDEX idx_clientes_fts ON sd_clientes.clientes
-    USING gin(to_tsvector('spanish', COALESCE(nombre_comercial, '') || ' ' || COALESCE(razon_social, '')));
-CREATE INDEX idx_leads_fts ON sd_comercial.leads
-    USING gin(to_tsvector('spanish', COALESCE(nombre, '') || ' ' || COALESCE(empresa_nombre, '') || ' ' || COALESCE(email, '')));
+-- Full text search (Comentado temporalmente por error 0A000)
+-- CREATE INDEX idx_clientes_fts ON sd_clientes.clientes
+--     USING gin(to_tsvector('spanish', COALESCE(nombre_comercial, '') || ' ' || COALESCE(razon_social, '')));
+-- CREATE INDEX idx_leads_fts ON sd_comercial.leads
+--     USING gin(to_tsvector('spanish', COALESCE(nombre, '') || ' ' || COALESCE(empresa_nombre, '') || ' ' || COALESCE(email, '')));
 
 -- ============================================================
 -- 15. FUNCIONES AUXILIARES

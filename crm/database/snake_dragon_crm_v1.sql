@@ -1640,7 +1640,7 @@ CREATE TABLE sd_soporte.encuestas_satisfaccion (
 -- ============================================================
 
 CREATE TABLE sd_audit.audit_log (
-    id              BIGSERIAL PRIMARY KEY,
+    id              BIGSERIAL,
     -- Identificación del evento
     tabla_schema    VARCHAR(50) NOT NULL,
     tabla_nombre    VARCHAR(100) NOT NULL,
@@ -1659,7 +1659,8 @@ CREATE TABLE sd_audit.audit_log (
     modulo          VARCHAR(50),
     accion_descripcion TEXT,
     -- Timestamp
-    created_at      TIMESTAMPTZ DEFAULT NOW()
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (id, created_at)
 ) PARTITION BY RANGE (created_at);
 
 -- Partición por mes (crear manualmente o con pg_partman)

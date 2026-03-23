@@ -30,10 +30,10 @@ COPY --from=builder /app/database ./database
 
 # Variables de entorno por defecto
 ENV NODE_ENV=production
-ENV PORT=80
+ENV PORT=5000
 
 # Exponer el puerto
-EXPOSE 80
+EXPOSE 5000
 
 # El comando ahora es node puro (mucho más rápido y ligero)
 CMD ["node", "dist-server/index.js"]

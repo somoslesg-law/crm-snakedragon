@@ -12,7 +12,7 @@ import { GoogleGenAI } from '@google/genai';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
-const PORT = parseInt(process.env.PORT || process.env.API_PORT || process.env.HTTP_PORT || '80', 10);
+const PORT = parseInt(process.env.PORT || process.env.API_PORT || process.env.HTTP_PORT || '5000', 10);
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────

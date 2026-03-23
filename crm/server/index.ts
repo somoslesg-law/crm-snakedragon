@@ -12,7 +12,7 @@ import { GoogleGenAI } from '@google/genai';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
-const PORT = parseInt(process.env.PORT || process.env.API_PORT || '3000', 10);
+const PORT = parseInt(process.env.PORT || process.env.API_PORT || '80', 10);
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────
@@ -31,6 +31,12 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '1mb' }));
+
+// Endpoint de prueba de fuego
+app.get('/debug-network', (req, res) => {
+    console.log(`[FIREWALL-TEST] Request received from IP: ${req.ip} - User Agent: ${req.headers['user-agent']}`);
+    res.send(`<h1>🚀 CONEXIÓN EXITOSA</h1><p>El tráfico está llegando al CRM correctamente.</p><p>IP: ${req.ip}</p>`);
+});
 
 // Rate limits
 const generalLimiter = rateLimit({

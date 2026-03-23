@@ -423,6 +423,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Snake Dragon CRM API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+app.listen(PORT, () => {
+    console.log(`🚀 Snake Dragon CRM API running on port ${PORT} [${process.env.NODE_ENV || 'production'}]`);
+    console.log(`📡 Listening on all available interfaces (IPv4/IPv6)`);
 });

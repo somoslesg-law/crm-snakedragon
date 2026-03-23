@@ -1770,7 +1770,7 @@ CREATE INDEX idx_audit_created ON sd_audit.audit_log(created_at DESC);
 
 -- Full text search
 CREATE INDEX idx_clientes_fts ON sd_clientes.clientes
-    USING gin(to_tsvector('spanish', COALESCE((SELECT nombre_completo FROM sd_clientes.contactos WHERE id = contacto_principal_id), '')));
+    USING gin(to_tsvector('spanish', COALESCE(nombre_comercial, '') || ' ' || COALESCE(razon_social, '')));
 CREATE INDEX idx_leads_fts ON sd_comercial.leads
     USING gin(to_tsvector('spanish', COALESCE(nombre, '') || ' ' || COALESCE(empresa_nombre, '') || ' ' || COALESCE(email, '')));
 

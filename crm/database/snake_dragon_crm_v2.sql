@@ -2126,6 +2126,7 @@ SELECT
     'lead_sin_contacto'         AS tipo_alerta,
     'comercial'                 AS categoria,
     'alta'                      AS severidad,
+    2                           AS severidad_prioridad,
     l.id                        AS entity_id,
     l.codigo_lead               AS entity_codigo,
     format('Lead %s sin contacto hace %s días', l.codigo_lead,
@@ -2143,7 +2144,7 @@ UNION ALL
 
 -- Facturas vencidas
 SELECT
-    'factura_vencida', 'financiero', 'alta',
+    'factura_vencida', 'financiero', 'alta', 2,
     f.id, f.codigo_factura,
     format('Factura %s vencida hace %s días — $%s COP pendiente',
            f.codigo_factura, f.dias_mora,
@@ -2159,7 +2160,7 @@ UNION ALL
 
 -- Clientes en riesgo de churn
 SELECT
-    'riesgo_churn', 'clientes', 'critica',
+    'riesgo_churn', 'clientes', 'critica', 1,
     c.id, c.codigo_cliente,
     format('Cliente %s en riesgo de churn — health score: %s',
            COALESCE(emp.razon_social, 'Sin nombre'), COALESCE(ch.health_score::TEXT, '?')),
@@ -2175,7 +2176,7 @@ UNION ALL
 
 -- Contratos por renovar (30 días)
 SELECT
-    'renovacion_proxima', 'contratos', 'media',
+    'renovacion_proxima', 'contratos', 'media', 3,
     rq.id, con.codigo_contrato,
     format('Contrato %s vence el %s — valor: $%s COP',
            con.codigo_contrato, rq.fecha_vencimiento,
@@ -2191,7 +2192,7 @@ UNION ALL
 
 -- Alertas de fraude activas
 SELECT
-    'fraude_comision', 'seguridad', 'critica',
+    'fraude_comision', 'seguridad', 'critica', 1,
     fa.id, com.codigo_comisionista,
     format('Alerta de fraude: %s — Comisionista: %s', fa.tipo_alerta, com.nombre_completo),
     'Admin',
@@ -2201,7 +2202,7 @@ JOIN sd_comisiones.comisionistas com ON com.id = fa.comisionista_id
 WHERE fa.estado IN ('nueva', 'en_revision')
 
 ORDER BY
-    CASE severidad WHEN 'critica' THEN 1 WHEN 'alta' THEN 2 WHEN 'media' THEN 3 ELSE 4 END,
+    severidad_prioridad ASC,
     fecha_referencia DESC;
 
 -- 13. Análisis del funnel completo

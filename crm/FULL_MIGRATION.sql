@@ -809,7 +809,7 @@ CREATE TABLE sd_comercial.oportunidades (
     fecha_cierre_real           DATE,
     ciclo_venta_dias            INTEGER GENERATED ALWAYS AS (
         CASE WHEN fecha_cierre_real IS NOT NULL
-             THEN EXTRACT(DAY FROM fecha_cierre_real::TIMESTAMPTZ - fecha_apertura::TIMESTAMPTZ)::INTEGER
+             THEN (fecha_cierre_real - fecha_apertura)
              ELSE NULL END
     ) STORED,
     -- Resultado
@@ -1270,11 +1270,7 @@ CREATE TABLE sd_financiero.facturas (
     fecha_ultimo_pago           DATE,
     fecha_pago_completo         DATE,
     -- Mora
-    dias_mora                   INTEGER GENERATED ALWAYS AS (
-        CASE WHEN fecha_vencimiento < CURRENT_DATE AND total_pagado_cop < total_cop
-             THEN EXTRACT(DAY FROM NOW() - fecha_vencimiento::TIMESTAMPTZ)::INTEGER
-             ELSE 0 END
-    ) STORED,
+    dias_mora                   INTEGER DEFAULT 0,
     interes_mora_cop            DECIMAL(12,2) DEFAULT 0,
     -- Recordatorios enviados
     recordatorios_enviados      INTEGER DEFAULT 0,
@@ -6354,7 +6350,7 @@ DO $$ BEGIN
         ALTER TABLE sd_portal.peticiones_servicio
             ADD COLUMN IF NOT EXISTS asignada_a UUID REFERENCES sd_core.usuarios(id),
             ADD COLUMN IF NOT EXISTS fecha_asignacion TIMESTAMPTZ,
-            ADD COLUMN IF NOT EXISTS fecha_limite TIMESTAMPTZ GENERATED ALWAYS AS (creado_en + INTERVAL '48 hours') STORED,
+            ADD COLUMN IF NOT EXISTS fecha_limite TIMESTAMPTZ,
             ADD COLUMN IF NOT EXISTS sla_cumplido BOOLEAN,
             ADD COLUMN IF NOT EXISTS notas_internas TEXT,
             ADD COLUMN IF NOT EXISTS motivo_rechazo TEXT,

@@ -1304,7 +1304,7 @@ DO $$ BEGIN
         ALTER TABLE sd_portal.peticiones_servicio
             ADD COLUMN IF NOT EXISTS asignada_a UUID REFERENCES sd_core.usuarios(id),
             ADD COLUMN IF NOT EXISTS fecha_asignacion TIMESTAMPTZ,
-            ADD COLUMN IF NOT EXISTS fecha_limite TIMESTAMPTZ GENERATED ALWAYS AS (creado_en + INTERVAL '48 hours') STORED,
+            ADD COLUMN IF NOT EXISTS fecha_limite TIMESTAMPTZ,
             ADD COLUMN IF NOT EXISTS sla_cumplido BOOLEAN,
             ADD COLUMN IF NOT EXISTS notas_internas TEXT,
             ADD COLUMN IF NOT EXISTS motivo_rechazo TEXT,

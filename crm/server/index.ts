@@ -18,6 +18,13 @@ const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 // ─── Security Middleware ──────────────────────────────────────────────────────
 app.use(helmet());
 
+// Log incoming requests for debugging production hits
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${req.ip}`);
+    next();
+});
+
+
 app.use(cors({
     origin: (origin, callback) => {
         const allowed = [CLIENT_URL, 'http://localhost:3000', 'http://localhost:5173'];

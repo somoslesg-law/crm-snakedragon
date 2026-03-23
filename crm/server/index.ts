@@ -16,7 +16,7 @@ const PORT = parseInt(process.env.PORT || process.env.API_PORT || '3000', 10);
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // Log incoming requests for debugging production hits
 app.use((req, res, next) => {
@@ -26,14 +26,7 @@ app.use((req, res, next) => {
 
 
 app.use(cors({
-    origin: (origin, callback) => {
-        const allowed = [CLIENT_URL, 'http://localhost:3000', 'http://localhost:5173'];
-        if (!origin || allowed.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error(`CORS blocked: ${origin}`));
-        }
-    },
+    origin: '*',
     credentials: true,
 }));
 
@@ -416,7 +409,8 @@ app.get('/api/health', async (_req, res) => {
 if (process.env.NODE_ENV === 'production') {
     const distPath = path.resolve(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
+    app.get('*', (req, res) => {
+        console.log(`[STATIC] Serving index.html for: ${req.url} from ${distPath}`);
         res.sendFile(path.join(distPath, 'index.html'));
     });
 }

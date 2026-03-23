@@ -16,11 +16,10 @@ const PORT = parseInt(process.env.PORT || process.env.API_PORT || process.env.HT
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────
-app.use(helmet({ contentSecurityPolicy: false }));
-
 // Log incoming requests for debugging production hits
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${req.ip}`);
+    console.log(`[NETWORK-HIT] --- Incoming Request: ${req.method} ${req.url} ---`);
+    console.log(`[IP]: ${req.ip} - [UA]: ${req.headers['user-agent']}`);
     next();
 });
 

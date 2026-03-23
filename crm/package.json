@@ -14,6 +14,7 @@
     "lint": "tsc --noEmit",
     "start": "pm2 start ecosystem.config.cjs",
     "db:init": "cd database && psql $DATABASE_URL -f init.sql",
+    "db:clean": "tsx database/flush.ts",
     "db:seed": "psql $DATABASE_URL -f database/seed.sql",
     "db:migrate": "tsx database/migrate.ts",
     "deploy": "npm run build:prod && npm run start"

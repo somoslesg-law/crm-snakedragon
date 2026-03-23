@@ -25,7 +25,7 @@ RUN npm ci --omit=dev
 
 # Copiar artefactos del build stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/dist-server ./dist-server
 COPY --from=builder /app/database ./database
 
 # Variables de entorno por defecto
@@ -35,6 +35,5 @@ ENV PORT=80
 # Exponer el puerto
 EXPOSE 80
 
-# Comando de producción: tsx para correr TypeScript directamente
-# tsx ya está en devDependencies pero se instala con npx para mantener imagen limpia
-CMD ["node", "--import", "tsx/esm", "server/index.ts"]
+# El comando ahora es node puro (mucho más rápido y ligero)
+CMD ["node", "dist-server/index.js"]

@@ -1,29 +1,48 @@
-import { Pool } from 'pg';
+import { Pool, PoolConfig, PoolClient } from 'pg';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables from the parent directory
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.warn('⚠️ DATABASE_URL not found in .env file. Please configure it to connect to PostgreSQL.');
+  console.error('❌ FATAL: DATABASE_URL is required. The application cannot start without a database connection.');
+  process.exit(1);
 }
 
-const pool = new Pool({
-  connectionString: connectionString || 'postgresql://postgres:postgres@localhost:5432/snake_dragon',
-});
+const poolConfig: PoolConfig = {
+  connectionString,
+  // Límites de conexiones — ajustar según la RAM del VPS
+  max: parseInt(process.env.DB_POOL_MAX || '20', 10),
+  min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+  // Tiempo máximo que una conexión puede estar ociosa antes de cerrarse
+  idleTimeoutMillis: 30000,
+  // Tiempo máximo para obtener una conexión del pool antes de lanzar error
+  connectionTimeoutMillis: 5000,
+};
 
-// Test connection
-pool.on('connect', () => {
+// Activar SSL si se requiere (entornos cloud externos separados)
+if (process.env.DB_REQUIRE_SSL === 'true') {
+  poolConfig.ssl = { rejectUnauthorized: false };
+}
+
+const pool = new Pool(poolConfig);
+
+pool.on('connect', (client: PoolClient) => {
+  // Garantizar zona horaria correcta para todos los campos TIMESTAMPTZ
+  client.query("SET TIME ZONE 'America/Bogota'").catch(() => {});
   console.log('🔗 Connected to PostgreSQL database');
 });
 
-pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client', err);
-  process.exit(-1);
+pool.on('error', (err: Error) => {
+  // IMPORTANTE: No usar process.exit() aquí. El pool internamente descarga
+  // el cliente roto y reconecta en automático. Un process.exit() aquí
+  // derribaría toda la app ante cualquier microcorte de red.
+  console.error('⚠️ Unexpected error on idle DB client (auto-recovery in progress):', err.message);
 });
 
-export const query = (text: string, params?: any[]) => pool.query(text, params);
+export const query = (text: string, params?: unknown[]) => pool.query(text, params);
+export const getClient = () => pool.connect();
 export default pool;
+

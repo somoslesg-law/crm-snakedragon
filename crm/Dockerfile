@@ -3,15 +3,15 @@ FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Instalar dependencias
-COPY package*.json ./
+# Instalar postgresql-client para los scripts de migraciones
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
-RUN npm install
 
-# Copiar el resto del código
+# Instalar TODAS las dependencias (incluidas devDeps para build)
+COPY package*.json ./
+RUN npm ci
+
+# Copiar el código fuente y compilar el frontend
 COPY . .
-
-# Build del frontend (Vite)
 RUN npm run build:prod
 
 # ─── Production Stage ────────────────────────────────────────────────────────
@@ -19,9 +19,11 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copiar dependencias de producción y binarios necesarios
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+# Instalar solo dependencias de producción
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Copiar artefactos del build stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/database ./database
@@ -33,5 +35,6 @@ ENV API_PORT=5000
 # Exponer el puerto
 EXPOSE 5000
 
-# Comando para arrancar el backend (que sirve el frontend)
-CMD ["npx", "tsx", "server/index.ts"]
+# Comando de producción: tsx para correr TypeScript directamente
+# tsx ya está en devDependencies pero se instala con npx para mantener imagen limpia
+CMD ["node", "--import", "tsx/esm", "server/index.ts"]

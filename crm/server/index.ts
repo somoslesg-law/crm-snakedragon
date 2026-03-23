@@ -12,7 +12,7 @@ import { GoogleGenAI } from '@google/genai';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const app = express();
-const PORT = process.env.API_PORT || 5000;
+const PORT = parseInt(process.env.API_PORT || '5000', 10);
 const CLIENT_URL = process.env.APP_URL || 'http://localhost:3000';
 
 // ─── Security Middleware ──────────────────────────────────────────────────────
@@ -416,6 +416,6 @@ if (process.env.NODE_ENV === 'production') {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Snake Dragon CRM API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
 });

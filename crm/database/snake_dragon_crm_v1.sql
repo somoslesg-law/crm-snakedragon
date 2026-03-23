@@ -741,6 +741,7 @@ CREATE TABLE sd_comercial.leads (
     timeframe_declarado         VARCHAR(100),     -- "en 1 mes", "en el Q3", etc.
     mensaje_inicial             TEXT,
     necesidades_declaradas      TEXT,
+    costo_adquisicion               DECIMAL(12,2), -- CAC individual
     -- Calificación
     etapa                       sd_comercial.etapa_pipeline DEFAULT 'nuevo',
     calificado                  BOOLEAN DEFAULT FALSE,
